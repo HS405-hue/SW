@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="theme-color" content="#1e2a44">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="สมุดแต่งเพลง">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>สมุดแต่งเพลง</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mali:wght@500;700&family=Sarabun:wght@400;600&display=swap">
+<style>
+:root{--bg:#e8edee;--card:#f8faf9;--ink:#1e2a44;--mut:#5c6b7a;--acc:#2f6b5a;--acc2:#d9a441;--line:#c9d3d6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a26;--card:#1d2536;--ink:#e6ebf2;--mut:#98a5b5;--acc:#6fc2a9;--acc2:#e6b95c;--line:#2f3a50}}
+:root[data-theme="dark"]{--bg:#141a26;--card:#1d2536;--ink:#e6ebf2;--mut:#98a5b5;--acc:#6fc2a9;--acc2:#e6b95c;--line:#2f3a50}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 Sarabun,"Noto Sans Thai",sans-serif}
+h1,h2,h3{font-family:Mali,Sarabun,sans-serif;margin:0 0 .4em;line-height:1.3}
+header{padding:18px 20px 6px;max-width:980px;margin:auto}
+header h1{font-size:1.9rem}
+header p{margin:0;color:var(--mut)}
+nav{display:flex;gap:6px;overflow-x:auto;max-width:980px;margin:12px auto 0;padding:0 20px 8px;border-bottom:2px solid var(--line)}
+nav button{flex:none;border:0;background:none;color:var(--mut);font:600 1rem Sarabun,sans-serif;padding:8px 14px;border-radius:10px 10px 0 0;cursor:pointer}
+nav button[aria-selected=true]{color:var(--ink);background:var(--card);box-shadow:inset 0 -3px var(--acc2)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--acc2);outline-offset:2px}
+main{max-width:980px;margin:auto;padding:18px 20px 60px}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+textarea{resize:vertical;min-height:260px;line-height:1.9}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1 1 140px}.row>.fit{flex:none}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:9px 16px;font:600 1rem Sarabun,sans-serif;cursor:pointer}
+:root:not([data-theme="light"]) .btn{color:#10231d}
+.btn.alt{background:none;color:var(--ink);border:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chip{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:2px 12px;cursor:pointer;font:inherit;color:var(--ink)}
+.chip:hover{border-color:var(--acc)}
+.chip small{color:var(--mut)}
+.mut{color:var(--mut);font-size:.92rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+.list button.item{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:8px 4px;color:var(--ink);font:inherit;cursor:pointer}
+.list button.item.sel{background:var(--bg)}
+.bar{display:flex;height:34px;border-radius:8px;overflow:hidden;margin:8px 0}
+.bar div{display:flex;align-items:center;justify-content:center;font-size:.8rem;color:#fff;min-width:0;overflow:hidden;white-space:nowrap}
+.chord{font:600 1.15rem Mali,sans-serif;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:4px 12px}
+.tag{font-size:.8rem;background:var(--acc2);color:#1e2a44;border-radius:6px;padding:0 8px;margin-right:6px}
+.x{border:0;background:none;color:var(--mut);cursor:pointer;font-size:1.1rem}
+</style>
+</head>
+<body>
+<header>
+<h1>สมุดแต่งเพลง</h1>
+<p>เครื่องมือรวมสำหรับคนเขียนเพลง ทั้งเนื้อ คำ สัมผัส โครงสร้าง และคอร์ด</p>
+</header>
+<nav id="tabs" role="tablist"></nav>
+<main>
+
+<section id="s-lyrics">
+<div class="grid" style="grid-template-columns:minmax(200px,1fr) 2.4fr">
+<div class="card list"><div class="row"><h3 style="flex:1">เพลงของฉัน</h3><button class="btn fit" id="newSong">เพลงใหม่</button></div><div id="songList"></div></div>
+<div>
+<div class="card">
+<input id="title" placeholder="ชื่อเพลง" aria-label="ชื่อเพลง">
+<div class="chips" id="secBtns"></div>
+<textarea id="lyr" placeholder="เริ่มเขียนเนื้อเพลงที่นี่ กดปุ่มด้านบนเพื่อแทรกท่อน" aria-label="เนื้อเพลง"></textarea>
+<p class="mut" id="stats"></p>
+<div class="row"><button class="btn fit" id="copyLyr">คัดลอกเนื้อเพลง</button><button class="btn alt fit" id="delSong">ลบเพลงนี้</button><span class="mut" id="saved"></span></div>
+</div>
+<div class="card"><h3>เช็กสัมผัสท้ายบรรทัด</h3><p class="mut">ดูคำท้ายแต่ละบรรทัด เพื่อจับว่าสัมผัสกันหรือยัง</p><div id="endWords" class="chips"></div></div>
+</div>
+</div>
+</section>
+
+<section id="s-rhyme">
+<div class="card">
+<h2>หาคำสัมผัส</h2>
+<div class="row"><input id="rq" placeholder="พิมพ์คำ เช่น ใจ ฝัน บ้าน" aria-label="คำที่ต้องการหาสัมผัส"><button class="btn fit" id="rgo">หาคำ</button></div>
+<div id="rout"></div>
+<p class="mut">คลังคำในแอพมีจำกัด ถ้าไม่พบ ลองพิมพ์คำที่ลงท้ายเสียงเดียวกัน หรือดูกลุ่มเสียงด้านล่าง</p>
+<div id="rgroups" class="chips"></div>
+</div>
+</section>
+
+<section id="s-words">
+<div class="card">
+<h2>ช่วยหาคำและความหมาย</h2>
+<input id="wq" placeholder="ค้นหา เช่น รัก เหงา ฝน หรือคำที่อยากได้คำใกล้เคียง" aria-label="ค้นหาคำ">
+<div id="wout" style="margin-top:12px"></div>
+</div>
+<div class="card"><h3>เทคนิคเลือกคำ</h3>
+<p>บอกเป็นภาพแทนบอกอารมณ์ตรงๆ เช่น "ชาเย็นไปแล้วทั้งแก้ว" ให้ความรู้สึกรอนานได้ชัดกว่าคำว่า "รอนาน"</p>
+<p>ใช้คำที่ออกเสียงง่ายบนโน้ตยาว เลี่ยงคำควบกล้ำและคำสะกดซับซ้อนตรงจังหวะที่ต้องลากเสียง</p>
+<p>ใช้ตัวเลือกจากด้านบนเป็นจุดตั้งต้น แล้วปรับให้เข้ากับน้ำเสียงของตัวเอง</p></div>
+</section>
+
+<section id="s-struct">
+<div class="card"><h2>โครงสร้างเพลง</h2>
+<select id="stSel" aria-label="เลือกรูปแบบเพลง"></select>
+<div id="stOut" style="margin-top:10px"></div></div>
+<div class="grid">
+<div class="card"><h3>หน้าที่ของแต่ละท่อน</h3>
+<p><b>Verse</b> เล่าเรื่อง ใส่รายละเอียด ฉาก ตัวละคร ทำนองเรียบกว่าคอรัส</p>
+<p><b>Pre-chorus</b> ไต่ระดับอารมณ์ให้คนฟังรู้ว่าคอรัสกำลังมา</p>
+<p><b>Chorus</b> ใจความหลัก ประโยคที่คนจำได้ ซ้ำชื่อเพลงอย่างน้อยหนึ่งครั้ง</p>
+<p><b>Bridge</b> มุมมองใหม่หรือหักมุม เปลี่ยนคอร์ดหรือจังหวะ</p></div>
+<div class="card"><h3>เช็กลิสต์ก่อนปิดเพลง</h3>
+<p>✓ ประโยคหลักของเพลงบอกได้ในหนึ่งประโยค<br>✓ Verse สองไม่ซ้ำ Verse หนึ่ง มีข้อมูลใหม่<br>✓ คอรัสจำได้หลังฟังครั้งแรก<br>✓ ความยาวพยางค์แต่ละบรรทัดใกล้เคียงกัน<br>✓ สัมผัสสม่ำเสมอ ไม่ฝืนความหมาย</p>
+<h3>แบบสัมผัสที่ใช้บ่อย</h3>
+<p>AABB คู่ติดกัน เรียบง่าย<br>ABAB สลับ ให้ความรู้สึกไหล<br>ABCB บรรทัดคู่สัมผัส เป็นธรรมชาติที่สุด</p></div>
+</div>
+</section>
+
+<section id="s-theory">
+<div class="card"><h2>ทฤษฎีดนตรีแบบพกพา</h2>
+<div class="row"><select id="key" aria-label="คีย์"></select><select id="mode" aria-label="โหมด"><option value="maj">เมเจอร์ (สดใส)</option><option value="min">ไมเนอร์ (เศร้า ลึก)</option></select></div>
+<h3 style="margin-top:14px">คอร์ดในคีย์</h3><div class="chips" id="diat"></div>
+<p class="mut" id="scale"></p></div>
+<div class="card"><h3>ลำดับคอร์ดยอดนิยม</h3><div id="prog"></div></div>
+<div class="card"><h3>พื้นฐานที่ควรรู้</h3>
+<p><b>คอร์ดเมเจอร์</b> เสียงสว่าง <b>ไมเนอร์</b> เสียงหม่น <b>7</b> เสียงค้างอยากไปต่อ <b>sus</b> เสียงลอยไม่ตัดสินใจ</p>
+<p>เปลี่ยนคีย์ให้เหมาะเสียงร้อง: ถ้าท่อนสูงสุดตึง ลองลดลง 1 ถึง 3 เสมิโทน</p>
+<p>จังหวะ 4/4 เหมาะเพลงป๊อปทั่วไป 3/4 เหมาะเพลงแนวรำวงหรือบัลลาดนุ่มๆ ความเร็วราว 60 ถึง 80 BPM เหมาะเพลงช้า</p></div>
+</section>
+
+<section id="s-ideas">
+<div class="card"><h2>เครื่องสุ่มไอเดีย</h2>
+<p id="spark" style="font:600 1.15rem Mali,sans-serif">กดปุ่มเพื่อสุ่มโจทย์แต่งเพลง</p>
+<div class="row"><button class="btn fit" id="spin">สุ่มโจทย์</button><button class="btn alt fit" id="sparkSave">เก็บโจทย์นี้ไว้</button></div></div>
+<div class="card"><h3>สมุดไอเดีย</h3>
+<div class="row"><input id="iTxt" placeholder="ประโยคเด็ด ภาพในหัว ทำนองที่ฮัมได้" aria-label="ไอเดียใหม่"><select id="iTag" class="fit" style="flex:none;width:auto" aria-label="ประเภท"><option>ประโยค</option><option>ทำนอง</option><option>เรื่องราว</option><option>ชื่อเพลง</option></select><button class="btn fit" id="iAdd">เพิ่ม</button></div>
+<div id="iList" style="margin-top:10px"></div></div>
+</section>
+</main>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const mem={};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return k in mem?mem[k]:d}},
+set(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* tabs */
+const TABS=[['lyrics','เนื้อเพลง'],['rhyme','คำสัมผัส'],['words','คำและความหมาย'],['struct','โครงสร้าง'],['theory','ทฤษฎีดนตรี'],['ideas','ไอเดีย']];
+const tabs=$('#tabs');
+TABS.forEach(([id,t],i)=>{const b=document.createElement('button');b.textContent=t;b.setAttribute('role','tab');b.dataset.id=id;b.onclick=()=>show(id);tabs.appendChild(b)});
+function show(id){tabs.querySelectorAll('button').forEach(b=>b.setAttribute('aria-selected',b.dataset.id===id));
+document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id==='s-'+id));store.set('tab',id)}
+
+/* lyrics */
+let songs=store.get('songs',[]),cur=store.get('cur',null);
+const save=()=>{store.set('songs',songs);store.set('cur',cur);$('#saved').textContent='บันทึกแล้ว'};
+function getSong(){return songs.find(s=>s.id===cur)}
+function newSong(){const s={id:Date.now(),title:'',text:'',t:Date.now()};songs.unshift(s);cur=s.id;save();renderList();load()}
+function renderList(){const el=$('#songList');el.innerHTML=songs.length?'':'<p class="mut">ยังไม่มีเพลง กด "เพลงใหม่" เพื่อเริ่ม</p>';
+songs.forEach(s=>{const b=document.createElement('button');b.className='item'+(s.id===cur?' sel':'');
+b.innerHTML='<b>'+esc(s.title||'เพลงไม่มีชื่อ')+'</b><br><span class="mut">'+esc((s.text.split('\n').find(x=>x.trim())||'').slice(0,30))+'</span>';
+b.onclick=()=>{cur=s.id;store.set('cur',cur);renderList();load()};el.appendChild(b)})}
+function load(){const s=getSong();$('#title').value=s?s.title:'';$('#lyr').value=s?s.text:'';$('#title').disabled=$('#lyr').disabled=!s;stats()}
+function lastWord(l){const w=l.trim().split(/\s+/).pop()||'';return w}
+function stats(){const t=$('#lyr').value;const lines=t.split('\n').filter(l=>l.trim()&&!/^\[.*\]$/.test(l.trim()));
+$('#stats').textContent='จำนวนบรรทัด '+lines.length+' บรรทัด | '+t.replace(/\s/g,'').length+' ตัวอักษร';
+const ew=$('#endWords');ew.innerHTML='';
+lines.slice(0,40).forEach(l=>{const w=lastWord(l);const g=findGroup(w);const c=document.createElement('span');c.className='chip';c.innerHTML=esc(w)+' <small>'+(g?g.n:'?')+'</small>';ew.appendChild(c)});
+if(!lines.length)ew.innerHTML='<span class="mut">ยังไม่มีเนื้อเพลง</span>'}
+$('#newSong').onclick=newSong;
+$('#title').oninput=e=>{const s=getSong();if(s){s.title=e.target.value;save();renderList()}};
+$('#lyr').oninput=e=>{const s=getSong();if(s){s.text=e.target.value;s.t=Date.now();save();stats()}};
+$('#delSong').onclick=()=>{const s=getSong();if(s&&confirm('ลบเพลง "'+(s.title||'ไม่มีชื่อ')+'" ใช่ไหม')){songs=songs.filter(x=>x!==s);cur=songs[0]?songs[0].id:null;save();renderList();load()}};
+$('#copyLyr').onclick=()=>{const s=getSong();if(!s)return;const t=(s.title?s.title+'\n\n':'')+s.text;
+(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>$('#saved').textContent='คัดลอกแล้ว').catch(()=>{$('#lyr').select();$('#saved').textContent='เลือกข้อความแล้ว กดคัดลอกเอง'})};
+['Intro','Verse 1','Pre-chorus','Chorus','Verse 2','Bridge','Outro'].forEach(n=>{const b=document.createElement('button');b.className='chip';b.textContent='+ '+n;
+b.onclick=()=>{const s=getSong()||(newSong(),getSong());const ta=$('#lyr');ta.value+=(ta.value&&!ta.value.endsWith('\n\n')?'\n\n':'')+'['+n+']\n';ta.dispatchEvent(new Event('input'));ta.focus()};$('#secBtns').appendChild(b)});
+
+/* rhyme bank */
+const G=[
+['aa','เสียง -า','ตา ฟ้า หา มา ว่า พา ลา ยา ปลา น้ำตา เวลา ศรัทธา ปัญญา ชีวา',['า']],
+['ai','เสียง -ัย / ไ- ใ-','ใจ ไป ไหม ไฟ ให้ ไว ไกล ใคร ใน ใส วัย ภัย ชัย ลัย ห่วงใย ไทย',['ัย']],
+['aai','เสียง -าย','ตาย สาย ปลาย ชาย หาย ลาย ยาย กาย ร้าย คลาย สบาย วาย ปลาย',['าย']],
+['ao','เสียง -าว / -เา','ขาว ยาว ดาว หนาว ก้าว ราว ข้าว เรา เขา เหงา เงา เศร้า เช้า เบา เมา',['าว']],
+['aan','เสียง -าน','บ้าน งาน นาน ผ่าน หวาน ตำนาน ทาน วิมาน ปาน สาน ฐาน สราญ',['าน','าล','าญ']],
+['an','เสียง -ัน','วัน ฝัน พลัน ผัน กัน ทัน ขัน ปัน ตัน ลั่น สัน',['ัน','ั่น','ั้น']],
+['in','เสียง -ิน','ดิน กิน บิน ยิน หิน ริน ถิ่น สิ้น ปิ่น สิน',['ิน','ิ่น','ิ้น']],
+['on','เสียง -น (อน โอน ฝน)','ฝน คน ทน ตน สน ปน ล้น ยล ต้น จน วน',['น']],
+['am','เสียง -ำ','ค่ำ ทำ จำ ช้ำ น้ำ ดำ ลำ คำ กำ ยำ',['ำ']],
+['aam','เสียง -าม','ความ ตาม งาม ยาม สาม ถาม ทราม ห้าม ราม',['าม']],
+['om','เสียง -ม','ลม ชม ผม ตรม สม คม กลม ห่ม ทุ่ม ล้ม',['ม']],
+['ang','เสียง -ัง','ฟัง หวัง ยัง รัง ตั้ง พลัง ตั้ง ฝัง สั่ง',['ัง','ั้ง']],
+['aang','เสียง -าง','ทาง กลาง ร้าง ว่าง ข้าง สว่าง ห่าง สร้าง อ้าง นาง',['าง']],
+['ong','เสียง -อง','ลอง ท้อง ของ มอง ร้อง น้อง ต้อง ก้อง กอง ทอง',['อง']],
+['uea','เสียง -ือ','มือ ชื่อ คือ ดื้อ ถือ ยื้อ รื้อ หรือ ซื่อ',['ือ']],
+['ee','เสียง -ี','ดี ปี ที่ สี มี นี่ ชีวี ทวี รี ที',['ี']],
+['oo','เสียง -ู','ดู รู สู ผู้ คู่ ลู่ ครู อยู่ รู้',['ู']],
+['ak','เสียง -ัก','รัก จัก ตัก หนัก พัก ปัก ศักดิ์ ยัก สลัก',['ัก']],
+['oe','เสียง -เออ','เธอ เจอ เผลอ เพ้อ เลอ เกลอ ละเมอ เสมอ',['ธอ','จอ','ลอ','้อ','มอ']]
+].map(a=>({id:a[0],n:a[1],w:a[2].split(/\s+/).filter((x,i,r)=>r.indexOf(x)===i),e:a[3]}));
+const NEAR=[['aan','an','in','on'],['am','aam','om'],['ang','aang','ong'],['ai','aai','ao']];
+const norm=s=>s.replace(/[\u0E48-\u0E4C]/g,'').replace(/[ๆ\s]/g,'');
+function findGroup(q){q=norm(q);if(!q)return null;
+let g=G.find(x=>x.w.some(w=>norm(w)===q));if(g)return g;
+let best=null,bl=0;G.forEach(x=>x.e.forEach(k=>{if(q.endsWith(k)&&k.length>bl){best=x;bl=k.length}}));return best}
+function chips(list,q){return '<div class="chips">'+list.map(w=>'<button class="chip" data-w="'+esc(w)+'">'+esc(w)+'</button>').join('')+'</div>'}
+function doRhyme(){const q=$('#rq').value.trim();const out=$('#rout');if(!q){out.innerHTML='';return}
+const g=findGroup(q);if(!g){out.innerHTML='<p>ยังไม่พบกลุ่มเสียงของ "'+esc(q)+'" ลองพิมพ์คำที่ลงท้ายคล้ายกัน หรือดูกลุ่มเสียงด้านล่าง</p>';return}
+let h='<h3>สัมผัสสระตรงกัน ('+g.n+')</h3>'+chips(g.w.filter(w=>norm(w)!==norm(q)));
+const nr=NEAR.find(r=>r.includes(g.id));
+if(nr){nr.filter(i=>i!==g.id).forEach(i=>{const n=G.find(x=>x.id===i);h+='<h3>สัมผัสใกล้เคียง ('+n.n+')</h3>'+chips(n.w)})}
+out.innerHTML=h+'<p class="mut">คลิกที่คำเพื่อคัดลอก</p>'}
+$('#rgo').onclick=doRhyme;$('#rq').onkeydown=e=>{if(e.key==='Enter')doRhyme()};
+document.addEventListener('click',e=>{const c=e.target.closest('[data-w]');if(c&&navigator.clipboard)navigator.clipboard.writeText(c.dataset.w).catch(()=>{})});
+G.forEach(g=>{const b=document.createElement('button');b.className='chip';b.textContent=g.n;b.onclick=()=>{$('#rq').value=g.w[0];doRhyme()};$('#rgroups').appendChild(b)});
+
+/* words */
+const W=[
+['รัก',[['หลงใหล','รักจนตัดใจไม่ได้ มีความคลั่งไคล้ปนอยู่'],['ผูกพัน','รักที่เกิดจากเวลา คุ้นเคย ไม่หวือหวา'],['เทิดทูน','รักด้วยความเคารพ ยกให้สูงกว่าตัว'],['ห่วงใย','รักที่แสดงออกด้วยการดูแล'],['ปรารถนา','อยากได้ อยากเป็นเจ้าของ มีความต้องการ']]],
+['เหงา',[['อ้างว้าง','ว่างเปล่า โดดเดี่ยวในที่กว้างใหญ่'],['ว้าเหว่','เหงาจนใจเคว้ง ไม่มีที่ยึด'],['ร้างรา','เหงาแบบสิ้นสุดแล้ว คนจากไปแล้ว'],['เดียวดาย','อยู่ลำพังจริงๆ มีน้ำหนักเชิงบรรยาย'],['เงียบงัน','ไม่มีเสียง เหมือนโลกหยุด']]],
+['คิดถึง',[['โหยหา','อยากได้กลับมาแรงมาก'],['ระลึกถึง','นึกถึงอย่างนุ่มนวล ไม่ทุกข์มาก'],['อาลัย','คิดถึงสิ่งที่ไม่กลับแล้ว'],['ถวิล','คิดถึงเรื่อยๆ เป็นคำเก่า ให้ความรู้สึกกวี']]],
+['จากลา',[['พลัดพราก','ถูกแยกโดยไม่เต็มใจ'],['ร้างลา','ตัดสินใจเดินจากไป'],['ลาลับ','จากไปแบบไม่กลับมา มักใช้กับความตาย'],['อำลา','บอกลาอย่างเป็นทางการและนุ่มนวล']]],
+['ฝน',[['พรำ','ตกเบาๆ ต่อเนื่อง เศร้าเงียบๆ'],['กระหน่ำ','ตกแรง อารมณ์รุนแรง'],['ปรอย','ละอองบาง ไม่ทันเปียก'],['เมฆหม่น','ฟ้ามืด ก่อนความเศร้าจะมา']]],
+['ฝัน',[['มโนภาพ','ภาพที่สร้างขึ้นในใจ'],['จินตนาการ','คิดเห็นเป็นภาพโดยไม่มีจริง'],['ปรารถนา','ฝันที่อยากไปให้ถึง'],['ลวงตา','ฝันที่ไม่จริง หลอกให้หลงเชื่อ']]],
+['หัวใจ',[['ดวงใจ','คำเรียกคนรัก หรือหัวใจอย่างอ่อนโยน'],['ทรวง','คำกวี ใช้ในอกและความรู้สึกลึก'],['อุรา','คำโบราณ แปลว่าอก ใช้ให้อารมณ์ขรึม'],['ใจ','คำสั้น เป็นธรรมชาติที่สุด']]],
+['ทะเล',[['คลื่น','การเคลื่อนไหว แทนความรู้สึกที่ซัดเข้ามา'],['ฝั่ง','ปลายทาง ที่ที่ปลอดภัย'],['ขอบฟ้า','ระยะไกลที่ไปไม่ถึง'],['ลมเค็ม','กลิ่นและสัมผัส ทำให้ฉากมีชีวิต']]],
+['ภูเขา',[['ทิวเขา','แนวเขาเรียงยาว เห็นเป็นภาพกว้าง'],['ยอดดอย','ที่สูงสุด ความสำเร็จหรือความเหงาบนที่สูง'],['หมอกเช้า','ความสงบ ความคลุมเครือ'],['เชิงเขา','จุดเริ่มต้นของการเดินทาง']]],
+['เวลา',[['ชั่วครู่','สั้นมาก ชวนให้คิดถึง'],['นิรันดร์','ยาวไม่สิ้นสุด'],['วันวาน','อดีตที่เพิ่งผ่าน'],['ค่ำคืน','ช่วงที่ความคิดและความเหงาเด่น']]],
+['เศร้า',[['หม่นหมอง','เศร้าอ่อนๆ ไม่สดใส'],['ช้ำ','เศร้าเพราะถูกกระทำ'],['ทุกข์ทน','เศร้าที่ต้องอดทนอยู่กับมัน'],['ตรม','เศร้าตรอมตรมนานๆ']]],
+['สุข',[['อิ่มเอม','สุขที่เต็มใจ'],['ปลื้มปีติ','สุขล้นจนรู้สึกได้ทั้งตัว'],['เบิกบาน','สุขที่แสดงออกสดใส'],['สงบ','สุขแบบไม่ต้องเสียงดัง']]]
+];
+function doWords(){const q=$('#wq').value.trim();const out=$('#wout');
+const list=q?W.filter(e=>e[0].includes(q)||e[1].some(x=>x[0].includes(q)||x[1].includes(q))):W;
+out.innerHTML=list.length?list.map(e=>'<div style="margin-bottom:12px"><h3>'+e[0]+'</h3>'+e[1].map(x=>'<div><button class="chip" data-w="'+x[0]+'">'+x[0]+'</button> <span class="mut">'+x[1]+'</span></div>').join('')+'</div>').join(''):'<p>ไม่พบ "'+esc(q)+'" ลองใช้คำอารมณ์กว้างๆ เช่น รัก เหงา เศร้า ฝน</p>'}
+$('#wq').oninput=doWords;
+
+/* structure */
+const ST={
+'ป๊อปมาตรฐาน':[['Intro',4,'#6b7a8f'],['Verse 1',16,'#2f6b5a'],['Pre',8,'#8a6d2f'],['Chorus',16,'#b5532f'],['Verse 2',16,'#2f6b5a'],['Pre',8,'#8a6d2f'],['Chorus',16,'#b5532f'],['Bridge',8,'#5a4a8a'],['Chorus',16,'#b5532f'],['Outro',4,'#6b7a8f']],
+'บัลลาดช้า':[['Intro',4,'#6b7a8f'],['Verse 1',16,'#2f6b5a'],['Chorus',16,'#b5532f'],['Verse 2',16,'#2f6b5a'],['Chorus',16,'#b5532f'],['Bridge',8,'#5a4a8a'],['Chorus ยกคีย์',16,'#b5532f'],['Outro',8,'#6b7a8f']],
+'โฟล์กเล่าเรื่อง':[['Verse 1',16,'#2f6b5a'],['Verse 2',16,'#2f6b5a'],['Refrain',8,'#b5532f'],['Verse 3',16,'#2f6b5a'],['Refrain',8,'#b5532f'],['Outro',4,'#6b7a8f']],
+'ฮุคก่อน':[['Hook',8,'#b5532f'],['Verse 1',16,'#2f6b5a'],['Chorus',16,'#b5532f'],['Verse 2',16,'#2f6b5a'],['Chorus',16,'#b5532f'],['Bridge',8,'#5a4a8a'],['Chorus',16,'#b5532f']]};
+const STN={'ป๊อปมาตรฐาน':'เหมาะกับเพลงรักทั่วไป คนฟังคุ้น จับง่าย','บัลลาดช้า':'อารมณ์ค่อยๆ ก่อตัว ปิดด้วยคอรัสที่ยกคีย์เพิ่มพลัง','โฟล์กเล่าเรื่อง':'เน้นเนื้อหา แต่ละท่อนพาเรื่องไปข้างหน้า คอรัสสั้นๆ ทำหน้าที่ย้ำใจความ','ฮุคก่อน':'เปิดด้วยประโยคเด็ดทันที เหมาะกับยุคที่ต้องดึงคนฟังใน 10 วินาทีแรก'};
+const sel=$('#stSel');Object.keys(ST).forEach(k=>{const o=document.createElement('option');o.textContent=k;sel.appendChild(o)});
+function doStruct(){const k=sel.value,a=ST[k],tot=a.reduce((s,x)=>s+x[1],0);
+$('#stOut').innerHTML='<p>'+STN[k]+'</p><div class="bar">'+a.map(x=>'<div style="flex:'+x[1]+';background:'+x[2]+'" title="'+x[0]+' '+x[1]+' ห้อง">'+x[0]+'</div>').join('')+'</div>'+
+'<p class="mut">รวม '+tot+' ห้อง ถ้าเป็น 4/4 ที่ 80 BPM ยาวราว '+Math.round(tot*4*60/80/6)/10+' นาที</p>'+
+a.map(x=>x[0]+' '+x[1]+' ห้อง').join(' , ').replace(/,/g,'<br>').replace(/ <br>/g,'<br>')}
+sel.onchange=doStruct;
+
+/* theory */
+const N=['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
+const keyEl=$('#key');N.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;keyEl.appendChild(o)});
+const SC={maj:{iv:[0,2,4,5,7,9,11],q:['','m','m','','','m','dim'],r:['I','ii','iii','IV','V','vi','vii°']},min:{iv:[0,2,3,5,7,8,10],q:['m','dim','','m','m','',''],r:['i','ii°','III','iv','v','VI','VII']}};
+const PR={maj:[['I V vi IV',[0,4,5,3],'ป๊อปคลาสสิก สดใส ใช้ได้กับเพลงเกือบทุกแนว'],['vi IV I V',[5,3,0,4],'เริ่มด้วยความเศร้าแต่จบด้วยความหวัง'],['I vi IV V',[0,5,3,4],'สไตล์เพลงยุค 50 ถึง 80 อบอุ่น คิดถึง'],['ii V I',[1,4,0],'ลื่นไหล นิยมในแจ๊ซและบัลลาด'],['I IV V IV',[0,3,4,3],'โฟล์กและร็อกเรียบง่าย']],
+min:[['i VI III VII',[0,5,2,6],'ยิ่งใหญ่ เศร้าแต่มีพลัง'],['i VII VI VII',[0,6,5,6],'วนไม่จบ เหมาะกับท่อนซ้ำ'],['i iv VII III',[0,3,6,2],'หม่นลึก ก่อนหมุนเป็นแสงสว่าง'],['i iv v i',[0,3,4,0],'ไมเนอร์พื้นฐาน เข้มและตรงไปตรงมา']]};
+function doTheory(){const k=+keyEl.value,m=$('#mode').value,s=SC[m];
+const ch=s.iv.map((v,i)=>N[(k+v)%12]+s.q[i]);
+$('#diat').innerHTML=ch.map((c,i)=>'<span class="chord">'+c+' <small class="mut">'+s.r[i]+'</small></span>').join('');
+$('#scale').textContent='โน้ตในสเกล: '+s.iv.map(v=>N[(k+v)%12]).join(' ');
+$('#prog').innerHTML=PR[m].map(p=>'<p><b>'+p[0]+'</b><br>'+p[1].map(d=>'<span class="chord">'+ch[d]+'</span>').join(' ')+'<br><span class="mut">'+p[2]+'</span></p>').join('')}
+keyEl.onchange=$('#mode').onchange=doTheory;
+
+/* ideas */
+const SP=[['ความรัก','ความสูญเสีย','ความหวัง','การเดินทาง','บ้านเกิด','เพื่อนเก่า','คำที่ไม่เคยพูด','ช่วงเวลากลับบ้าน'],['มองผ่านสายตาเด็ก','เล่าเป็นจดหมาย','พูดกับตัวเองเมื่อ 10 ปีก่อน','ตอนตีสามคนเดียว','เล่าผ่านสิ่งของชิ้นเดียว'],['ฝนตกบนหลังคาสังกะสี','ถนนหลังเลิกงาน','เสียงระฆังไกลๆ','ต้นไม้ริมรั้ว','ชากาแฟที่เย็นแล้ว','หมอกบนภูเขา']];
+let spark='';
+$('#spin').onclick=()=>{const r=a=>a[Math.floor(Math.random()*a.length)];spark='หัวข้อ: '+r(SP[0])+' | มุมมอง: '+r(SP[1])+' | ภาพ: '+r(SP[2]);$('#spark').textContent=spark};
+let ideas=store.get('ideas',[]);
+function renderIdeas(){$('#iList').innerHTML=ideas.length?'':'<p class="mut">ยังไม่มีไอเดีย จดอะไรที่ผุดขึ้นมาไว้ก่อนได้เลย</p>';
+ideas.forEach((x,i)=>{const d=document.createElement('div');d.className='row';d.style.cssText='flex-wrap:nowrap;border-bottom:1px solid var(--line);padding:6px 0';
+d.innerHTML='<div style="flex:1"><span class="tag">'+esc(x.tag)+'</span>'+esc(x.txt)+'</div>';
+const b=document.createElement('button');b.className='x fit';b.textContent='✕';b.setAttribute('aria-label','ลบไอเดีย');b.onclick=()=>{ideas.splice(i,1);store.set('ideas',ideas);renderIdeas()};d.appendChild(b);$('#iList').appendChild(d)})}
+function addIdea(t,tag){if(!t.trim())return;ideas.unshift({txt:t.trim(),tag});store.set('ideas',ideas);renderIdeas()}
+$('#iAdd').onclick=()=>{addIdea($('#iTxt').value,$('#iTag').value);$('#iTxt').value=''};
+$('#iTxt').onkeydown=e=>{if(e.key==='Enter')$('#iAdd').click()};
+$('#sparkSave').onclick=()=>{if(spark)addIdea(spark,'เรื่องราว')};
+
+/* init */
+if(!songs.find(s=>s.id===cur))cur=songs[0]?songs[0].id:null;
+renderList();load();doWords();doStruct();doTheory();renderIdeas();
+$('#saved').textContent='';
+show(store.get('tab','lyrics'));
+})();
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
+</script>
+</body>
+</html>
